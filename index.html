@@ -999,7 +999,7 @@ class RoverGL {
   }
   load() {
     const add = src => new Promise((res, rej) => { const s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = () => rej(new Error('could not load ' + src)); document.head.appendChild(s); });
-    (window.THREE ? Promise.resolve() : add('../assets/vendor/three-r170.min.js')).then(() => window.ROVER_GLB ? 0 : add('../assets/rover.glb.js')).then(() => this.init()).catch(err => this.fail(err));
+    (window.THREE ? Promise.resolve() : add('assets/vendor/three-r170.min.js')).then(() => window.ROVER_GLB ? 0 : add('assets/rover.glb.js')).then(() => this.init()).catch(err => this.fail(err));
   }
   fail(err) { if (err) console.error(err); this.fig.classList.remove('wait'); const n = document.createElement('span'); n.className = 'note'; n.textContent = '3D view unavailable in this browser'; this.fig.appendChild(n); }
   init() {
