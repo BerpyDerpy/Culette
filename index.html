@@ -840,9 +840,8 @@
       font-style: italic
     }
 
-    /* ---- TRIAL: project grounds. #work[data-stage] = off | spot | tray | panel | print.
-       Every option keeps the page's own colours: a lift is ink mixed a few % into --bg, a tint is the project's dot colour at
-       single-digit %. The canvases go transparent (--pb) so the ground runs under the visual instead of stopping at its box. ---- */
+    /* ---- project grounds: each project is a quiet card (lifted surface, hairline, accent thread on top); behind each visual a fine
+       drafting grid feathers out to nothing under a faint accent bloom. The canvases go transparent (--pb) so the ground runs under them. ---- */
     #work {
       --lift: color-mix(in srgb, var(--ink) 3.5%, var(--bg));
       --lift2: color-mix(in srgb, var(--ink) 1.5%, var(--bg));
@@ -851,11 +850,25 @@
       isolation: isolate
     }
 
-    #work:not([data-stage=off]) .proj {
-      --pb: transparent
+    #work .proj {
+      --pb: transparent;
+      padding: clamp(20px, 2.6vw, 40px);
+      border-radius: 3px;
+      background: linear-gradient(165deg, var(--lift), var(--lift2) 60%);
+      box-shadow: inset 0 0 0 1px var(--rule);
+      position: relative;
+      overflow: hidden
     }
 
-    #work:not([data-stage=off]) .pv {
+    #work .proj::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 45%, transparent), transparent)
+    }
+
+    #work .pv {
       background: none
     }
 
@@ -872,60 +885,11 @@
     }
 
     /* the Ocea screenshot has a near-black ground baked in; in dark mode "lighten" drops it so only the ocean shows */
-    :root:not([data-theme=light]) #work:not([data-stage=off]) .proj[data-k=ocea] .pv img {
+    :root:not([data-theme=light]) #work .proj[data-k=ocea] .pv img {
       mix-blend-mode: lighten
     }
 
-    /* A. Spotlight: each visual sits in a soft pool of its own accent, no edges anywhere */
-    #work[data-stage=spot] .pv::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(ellipse 46% 40% at 50% 56%, color-mix(in srgb, var(--c) 9%, transparent), transparent 100%),
-        radial-gradient(ellipse 60% 56% at 50% 52%, color-mix(in srgb, var(--ink) 3%, transparent), transparent 100%)
-    }
-
-    /* B. Tray: the whole section rests on one slightly lifted surface with a faint dot grid, fading in and out at its ends */
-    #work[data-stage=tray]::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-      background:
-        radial-gradient(circle, var(--grid) .8px, transparent 1.2px) 0 0 / 26px 26px,
-        var(--lift2);
-      -webkit-mask-image: linear-gradient(transparent, #000 280px, #000 calc(100% - 200px), transparent);
-      mask-image: linear-gradient(transparent, #000 280px, #000 calc(100% - 200px), transparent)
-    }
-
-    /* C. Panel: each project is a quiet card; the visual bleeds to the card's edge */
-    #work[data-stage=panel] .proj {
-      padding: clamp(20px, 2.6vw, 40px);
-      border-radius: 3px;
-      background: linear-gradient(165deg, var(--lift), var(--lift2) 60%);
-      box-shadow: inset 0 0 0 1px var(--rule);
-      position: relative;
-      overflow: hidden
-    }
-
-    #work[data-stage=panel] .proj::before {
-      content: "";
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 45%, transparent), transparent)
-    }
-
-    #work[data-stage=panel] .pv::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 50% 46% at 50% 56%, color-mix(in srgb, var(--c) 7%, transparent), transparent 100%)
-    }
-
-    /* D. Blueprint: a fine drafting grid behind each visual, feathered out to nothing, with a faint accent bloom */
-    #work[data-stage=print] .pv::before {
+    #work .pv::before {
       content: "";
       position: absolute;
       inset: 0;
@@ -936,72 +900,12 @@
       mask-image: radial-gradient(ellipse 52% 50% at 50% 52%, #000 20%, transparent 100%)
     }
 
-    #work[data-stage=print] .pv:not(.wait)::after {
+    #work .pv:not(.wait)::after {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: radial-gradient(ellipse 42% 36% at 50% 56%, color-mix(in srgb, var(--c) 7%, transparent), transparent 100%)
-    }
-
-    .stagepick {
-      position: fixed;
-      z-index: 45;
-      left: 50%;
-      bottom: 18px;
-      transform: translate(-50%, 12px);
-      display: flex;
-      align-items: center;
-      gap: 2px;
-      padding: 4px;
-      border-radius: 3px;
-      background: var(--navbg);
-      backdrop-filter: blur(10px);
-      box-shadow: inset 0 0 0 1px var(--rule2);
-      font: 15px var(--sans);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity .3s, transform .3s
-    }
-
-    .stagepick.on {
-      opacity: 1;
-      transform: translate(-50%, 0);
-      pointer-events: auto
-    }
-
-    .stagepick span {
-      color: var(--mute);
-      padding: 0 10px 0 8px
-    }
-
-    .stagepick button {
-      font: inherit;
-      color: var(--si);
-      background: none;
-      border: 0;
-      border-radius: 2px;
-      padding: 6px 12px;
-      cursor: pointer
-    }
-
-    .stagepick button:hover {
-      color: var(--ink)
-    }
-
-    .stagepick button[aria-pressed=true] {
-      color: var(--ink);
-      box-shadow: inset 0 0 0 1px var(--ink)
-    }
-
-    @media(max-width:700px) {
-      .stagepick span {
-        display: none
-      }
-
-      .stagepick button {
-        padding: 6px 8px
-      }
+      background: radial-gradient(ellipse 42% 36% at 50% 56%, color-mix(in srgb, var(--c) 9%, transparent), transparent 100%)
     }
 
     /* how a project runs */
@@ -1721,7 +1625,8 @@ void main(){vec2 p=vec2(float((gl_VertexID<<1)&2),float(gl_VertexID&2));gl_Posit
 precision highp float;
 uniform sampler2D T;
 uniform vec2 uRes,uC,uTilt;
-uniform float uS,uRot,uTime,uG,uDis,uPulse,uLight,uRm,uShow,uLt,uFade;
+uniform float uS,uRot,uTime,uG,uDis,uPulse,uLight,uRm,uShow,uLt,uFade,uSpot;
+uniform vec2 uPtr;
 uniform vec3 uBG,uINK,uHI,uSH,uACC;
 out vec4 o;
 const float S3=.8660254;
@@ -1804,9 +1709,22 @@ void main(){
       rim=vec3(.32,.42,.55)*.7;
       col=mix(col,vec3(.62,.79,.93),fa*.14);
     }
+    /* pointer spotlight, once the crystal is built: a small lamp held over the pointer. Facets turn to catch it (a tight specular lobe
+       plus a broad sheen), the frost grain flares as the lamp crosses it, and the air under it lifts a little */
+    if(uSpot>.001){
+      vec2 dv=(f-uPtr)/(uS*uRm);float rr=length(dv);
+      vec3 Lp=normalize(vec3(-dv*1.6,.38));
+      float nq=max(dot(N,normalize(Lp+vec3(0.,0.,1.))),0.);
+      float pool=exp(-rr*rr*22.),wide=exp(-rr*rr*5.);
+      float grain=step(.9,hash(floor(gq*1.9)+11.)),tw=.5+.5*sin(uTime*5.+hash(floor(gq*1.9))*40.);
+      vec3 gc=mix(uHI,vec3(1.,.86,.62),.35*(1.-uLt));
+      ice+=gc*(pow(nq,60.)*1.25*pool+pow(nq,14.)*.3*wide+grain*tw*pow(nq,3.)*.9*pool)*uSpot;
+      ice+=gc*pool*.1*uSpot*(1.-uLt*.5);
+    }
     col=mix(col,min(ice,vec3(1.)),mask*uFade);
     col=mix(col,rim,mask*(1.-mask)*.4*uFade);
   }
+  {vec2 dv=(f-uPtr)/(uS*uRm);col+=mix(vec3(.9,.7,.45),vec3(.7,.85,1.),uLt)*exp(-dot(dv,dv)*9.)*uSpot*mix(.05,.07,uLt)*(1.-mask);}
   /* nucleation pulse, quiet */
   float pr=uPulse*.62,on=step(0.,uPulse);
   col=mix(col,uACC,clamp((exp(-pow((rad-pr)*42.,2.))*exp(-uPulse*1.1)*.22+exp(-rad*rad*900.)*exp(-uPulse*.8)*.45)*on,0.,1.));
@@ -1825,7 +1743,7 @@ void main(){
           const small = Math.min(screen.width, screen.height) < 700;
           this.G = small ? 321 : 441; this.sim = new Sim(this.G);
           this.state = 'idle'; this.time = 0; this.stateT = 0; this.pulse = -1; this.dis = -1; this.show = 0; this.preset = 0;
-          this.tilt = [0, 0]; this.tiltT = [0, 0]; this.ptr = null; this.down = false; this.lastMove = -10; this.light = 0.8;
+          this.tilt = [0, 0]; this.tiltT = [0, 0]; this.ptr = null; this.down = false; this.lastMove = -10; this.light = 0.8; this.spot = 0; this.sp = null;
           this.hist = new Float32Array(90); this.lastIce = 1; this.visible = true; this.dpr = Math.min(window.devicePixelRatio || 1, small ? 1.25 : 1.5); this.fps = 60;
           this.P = glProgram(this.cv, HERO_FS);
           if (this.P) { const gl = this.P.gl; this.tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, this.tex); const lv = Math.floor(Math.log2(this.G)) + 1; gl.texStorage2D(gl.TEXTURE_2D, lv, gl.RGBA8, this.G, this.G); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE); gl.uniform1i(this.P.U.T, 0); }
@@ -1898,6 +1816,10 @@ void main(){
           const k = 1 - Math.exp(-dt * 2.4); this.tilt[0] += (this.tiltT[0] - this.tilt[0]) * k; this.tilt[1] += (this.tiltT[1] - this.tilt[1]) * k;
           this.rot = Math.PI / 6 + (RM ? 0 : this.time * 0.012);
           this.light = RM ? 0.8 : 0.8 + this.time * 0.11 + (this.ptr && !idle ? (this.ptr[0] / this.Wc - 0.5) * 1.2 : 0);
+          /* spotlight: eases in once the crystal is fully built (ripening) and the pointer is over it, then follows the pointer with a little lag */
+          const want = this.state === 'ripen' && this.ptr && this.inside && FINE && !RM ? 1 : 0;
+          this.spot += (want - this.spot) * (1 - Math.exp(-dt * (want ? 3 : 5)));
+          if (this.ptr) { const g = [this.ptr[0], this.ptr[1]]; if (!this.sp) this.sp = g; else { const a = 1 - Math.exp(-dt * 14); this.sp[0] += (g[0] - this.sp[0]) * a; this.sp[1] += (g[1] - this.sp[1]) * a; } }
           /* full frame rate only while the pointer is in play; the sim keeps the same pace either way */
           const fps = idle && !this.down ? 30 : 60; if (fps !== this.fps) { this.fps = fps; this.ema = 1 / fps; }
           if (this.state !== 'idle' && this.ptr && this.inside && this.state !== 'sub') {
@@ -1927,7 +1849,7 @@ void main(){
             const { gl, U } = this.P;
             gl.uniform2f(U.uRes, W, H); gl.uniform2f(U.uC, this.cx * d, H - this.cy * d); gl.uniform2f(U.uTilt, this.tilt[0], this.tilt[1]);
             gl.uniform1f(U.uS, this.S * d); gl.uniform1f(U.uRot, this.rot); gl.uniform1f(U.uTime, this.time); gl.uniform1f(U.uG, this.G);
-            gl.uniform1f(U.uDis, this.dis); gl.uniform1f(U.uPulse, this.pulse); gl.uniform1f(U.uLight, this.light); gl.uniform1f(U.uRm, this.Rm); gl.uniform1f(U.uShow, this.show);
+            gl.uniform1f(U.uDis, this.dis); gl.uniform1f(U.uPulse, this.pulse); gl.uniform1f(U.uLight, this.light); gl.uniform1f(U.uRm, this.Rm); gl.uniform1f(U.uSpot, this.sp ? this.spot : 0); gl.uniform2f(U.uPtr, this.sp ? this.sp[0] * d : 0, this.sp ? H - this.sp[1] * d : 0); gl.uniform1f(U.uShow, this.show);
             const C = this.cols; gl.uniform3fv(U.uBG, C.bg); gl.uniform3fv(U.uINK, C.ink); gl.uniform3fv(U.uHI, C.hi); gl.uniform3fv(U.uSH, C.sh); gl.uniform3fv(U.uACC, C.acc); gl.uniform1f(U.uLt, C.lt); gl.uniform1f(U.uFade, this.fade);
             gl.drawArrays(gl.TRIANGLES, 0, 3);
           } else {
@@ -2416,23 +2338,6 @@ void main(){
         $('.skip', ov).addEventListener('click', skip); addEventListener('keydown', skip, { once: true }); addEventListener('wheel', skip, { once: true, passive: true }); ov.addEventListener('pointerdown', e => { if (!e.target.closest('.skip')) skip(); });
       }
       document.fonts.ready.then(intro);
-      /* TRIAL: background picker for the projects section (?stage=spot|tray|panel|print|off). Remove once one is chosen. */
-      {
-        const work = $('#work'), STAGES = [['off', 'Current'], ['spot', 'Spotlight'], ['tray', 'Tray'], ['panel', 'Panel'], ['print', 'Blueprint']];
-        const pick = document.createElement('div'); pick.className = 'stagepick'; pick.setAttribute('role', 'group'); pick.setAttribute('aria-label', 'Project background');
-        pick.innerHTML = '<span>Background</span>' + STAGES.map(([k, n]) => `<button type="button" data-k="${k}">${n}</button>`).join('');
-        document.body.appendChild(pick);
-        const set = k => {
-          if (!STAGES.some(s => s[0] === k)) k = 'spot';
-          work.dataset.stage = k; try { localStorage.setItem('culette-stage', k); } catch (e) { }
-          $$('button', pick).forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k));
-          for (const m of minis) m.theme();
-        };
-        let first = new URLSearchParams(location.search).get('stage'); try { first = first || localStorage.getItem('culette-stage'); } catch (e) { }
-        set(first || 'spot');
-        pick.addEventListener('click', e => { const b = e.target.closest('button'); if (b) set(b.dataset.k); });
-        new IntersectionObserver(es => pick.classList.toggle('on', es[0].isIntersecting), { rootMargin: '-30% 0px -30% 0px' }).observe(work);
-      }
       window.__culette = { hero, minis, rover, setTheme };
     }
   </script>
